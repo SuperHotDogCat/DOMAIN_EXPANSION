@@ -24,7 +24,7 @@ hands = mp.solutions.hands.Hands(
 v_cap = cv2.VideoCapture(0)#カメラのIDを選ぶ。映らない場合は番号を変える。
 
 
-target_fps = 20
+target_fps = 30
 # フレームごとの待機時間を計算
 frame_interval = 1.0 / target_fps
 all_data = []

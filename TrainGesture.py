@@ -24,4 +24,4 @@ if __name__ == "__main__":
     processed_data, label = preprocessing_train_data(data)
     X_train, X_val, y_train, y_val = train_test_split(processed_data, label, test_size=0.2, random_state=42)
     history = model.fit(X_train, y_train, epochs=100, validation_data=(X_val, y_val))
-    model.save("model.h5")
+    model.save("model")
