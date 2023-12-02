@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 #https://qiita.com/yohachi/items/434f0da356161e82c242にしたがってモデルを作りたい
 
 model = models.Sequential([
-    layers.Dense(units=40, activation='relu', input_shape=(80,)),
+    layers.Dense(units=40, activation='relu', input_shape=(120,)),
     layers.Dense(units=20, activation='relu'),
     layers.Dense(units=2, activation='softmax'),
 ]

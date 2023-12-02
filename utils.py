@@ -17,9 +17,11 @@ def preprocessing_train_data(data: List[dict]):
         right_data = right_data / np.max(np.abs(right_data)) #最大値で正規化
         label = label.reshape(-1)
 
-        processed_data = np.concatenate([left_data, right_data, label], axis = 0)
+        distance_each_data = np.abs(left_data - right_data)
+
+        processed_data = np.concatenate([left_data, right_data, distance_each_data, label], axis = 0)
         output.append(processed_data)
-    output = np.array(output) #dim: (data_size, 81)
+    output = np.array(output) #dim: (data_size, 121)
     processed_data, label = output[:,:-1], output[:,[-1]]
     return processed_data, label
 
@@ -38,7 +40,8 @@ def preprocessing_gesture_data(data: List[dict]):
         right_data = right_data[1:].reshape(-1)
         right_data = right_data / np.max(np.abs(right_data)) #最大値で正規化
 
-        processed_data = np.concatenate([left_data, right_data], axis = 0)
+        distance_each_data = np.abs(left_data - right_data)
+        processed_data = np.concatenate([left_data, right_data, distance_each_data], axis = 0)
         output.append(processed_data)
-    output = np.array(output) #dim: (data_size, 80)
+    output = np.array(output) #dim: (data_size, 120)
     return output
