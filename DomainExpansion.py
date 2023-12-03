@@ -5,6 +5,9 @@ import pickle
 import cv2
 from time import time, sleep
 import mediapipe as mp
+import pygame
+pygame.mixer.init()
+pygame.mixer.music.load("assets/domain_expansion.wav")
 # TFLiteモデルの読み込み
 interpreter = tf.lite.Interpreter(model_path="model.tflite")
 # メモリ確保。これはモデル読み込み直後に必須
@@ -42,18 +45,14 @@ hands = mp.solutions.hands.Hands(
 )
 
 v_cap = cv2.VideoCapture(0)#カメラのIDを選ぶ。映らない場合は番号を変える。
-
+movie_cap = cv2.VideoCapture('assets/domain_expansion.mp4')
 target_fps = 30
 # フレームごとの待機時間を計算
-frame_interval = 1.0 / target_fps
 
 domain_expansion: bool = False #領域展開しているか否かを判別する変数
-
+clock = pygame.time.Clock()
 while True:
-    start_time = time() #FPS制御用の変数
     if not domain_expansion:
-        success, img = v_cap.read()
-        start_time = time()
         success, img = v_cap.read()
         if not success:
             continue
@@ -112,14 +111,8 @@ while True:
                     data[hand_class.label] = positions
         else:
             data = {}
+        output_data = None
         cv2.imshow("MediaPipe Hands", img)
-        end_time = time()
-        elapsed_time = end_time - start_time
-        sleep_time = max(0, frame_interval - elapsed_time)
-        sleep(sleep_time)
-        key = cv2.waitKey(5) & 0xFF
-        if key == 27:#ESCキーが押されたら終わる
-            break
         if len(data.keys()) == 2:
             processed_data = preprocessing_gesture_data([data]).astype(np.float32)
             interpreter.set_tensor(input_details[0]['index'], processed_data)
@@ -129,5 +122,21 @@ while True:
             output_data = np.where(output_data > 0.9)
             if output_data[0] == 1:
                 print("領域展開: †伏魔御厨子†")
-            else:
-                print("領域展開できない")
+                pygame.mixer.music.play()
+                domain_expansion = True
+
+    elif domain_expansion:
+        success, img = movie_cap.read()
+        if not success:
+            domain_expansion = False
+            movie_cap = cv2.VideoCapture('assets/domain_expansion.mp4')
+            data = {}
+            continue
+        img_h, img_w, _ = img.shape     # サイズ取得
+        cv2.imshow("MediaPipe Hands", img)
+
+    #FPS制御
+    key = cv2.waitKey(5) & 0xFF
+    if key == 27:#ESCキーが押されたら終わる
+        break
+    clock.tick(target_fps)
