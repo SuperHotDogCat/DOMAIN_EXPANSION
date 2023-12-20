@@ -9,7 +9,8 @@ def preprocessing_train_data(data: List[dict]):
         left_data = np.array(datum["Left"])
         right_data = np.array(datum["Right"])
         label = np.array(datum["Label"])
-        distance_each_data = (left_data - right_data).reshape(-1)
+        distance_each_data = (left_data - right_data).reshape(-1) #右手左手のkeypointsの差分を取る
+        distance_each_data = distance_each_data / np.max(np.abs(distance_each_data)) #絶対値最大値で正規化
         left_data = left_data - left_data[0] #Keypoints 0からの相対ベクトルを求める
         right_data = right_data - right_data[0] #Keypoints 0からの相対ベクトルを求める
         
@@ -21,8 +22,7 @@ def preprocessing_train_data(data: List[dict]):
 
         processed_data = np.concatenate([left_data, right_data, distance_each_data, label], axis = 0)
         output.append(processed_data)
-    output = np.array(output) #dim: (data_size, 121)
-
+    output = np.array(output) #dim: (data_size, 122)
     processed_data, label = output[:,:-1], output[:,[-1]]
     return processed_data, label
 
@@ -32,7 +32,9 @@ def preprocessing_gesture_data(data: List[dict]):
     for datum in data:
         left_data = np.array(datum["Left"])
         right_data = np.array(datum["Right"])
-        distance_each_data = (left_data - right_data).reshape(-1)
+        distance_each_data = (left_data - right_data).reshape(-1) #右手左手のkeypointsの差分を取る
+        distance_each_data = distance_each_data / np.max(np.abs(distance_each_data)) #絶対値最大値で正規化
+
         left_data = left_data - left_data[0] #Keypoints 0からの相対ベクトルを求める
         right_data = right_data - right_data[0] #Keypoints 0からの相対ベクトルを求める
         
@@ -43,7 +45,7 @@ def preprocessing_gesture_data(data: List[dict]):
 
         processed_data = np.concatenate([left_data, right_data, distance_each_data], axis = 0)
         output.append(processed_data)
-    output = np.array(output) #dim: (data_size, 120)
+    output = np.array(output) #dim: (data_size, 122)
     return output
 
 landmark_line_ids = [ 
